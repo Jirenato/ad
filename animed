@@ -1,0 +1,545 @@
+--TO DO LIST
+--REDO THE GUI
+--Make an Auto Daily Quest
+local players = game:GetService("Players")
+local ts = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+local RS = game:GetService("ReplicatedStorage")
+local VirtualUser=game:service'VirtualUser'
+local _, player = pcall(function() local t repeat t = players.LocalPlayer task.wait() until t return t end)
+local missionended = false
+local rebound = true
+game.CoreGui.RobloxPromptGui.promptOverlay.DescendantAdded:Connect(function()
+    local GUI = game.CoreGui.RobloxPromptGui.promptOverlay:FindFirstChild("ErrorPrompt")
+    if rebound and GUI then
+        if GUI.TitleFrame.ErrorTitle.Text == "Disconnected" or GUI.TitleFrame.ErrorTitle.Text == "Teleport Failed" then
+			game.Players.LocalPlayer:Kick("\nRejoining...")
+			rebound = false
+			while task.wait(5) do
+				ts:Teleport(7274690025, game.Players.LocalPlayer)
+				task.wait(25)
+				ts:TeleportCancel()
+			end
+        end
+    end
+end)
+local successfull,Rayfield = pcall(function() return loadstring(game:HttpGet('https://sirius.menu/rayfield'))() end)
+while task.wait(5) and not successfull do
+	successfull,Rayfield = pcall(function() return loadstring(game:HttpGet('https://sirius.menu/rayfield'))() end)
+end
+local filename = "AnimeDimensions.txt"
+local json;
+local settings = {
+autoraid = false,
+autospeedraid = false,
+autofarm = false,
+retry = false,
+Main = "",
+assist = "",
+assistt = "",
+selectedraid = "",
+selecteddimension = "",
+Difficulty = "Easy",
+hardcore = false,
+lastraidtime = 1,
+notification = "https://discord.com/api/webhooks/932738608484479037/EtbJCsBvZPGFibQPAkCkNIZw7rB6fZZXOWDaBFccmk--8EJT5_uQjBYdKGIcLQADtHzB"
+}
+local Window = Rayfield:CreateWindow({
+	Name = "Anime Dimensions",
+	LoadingTitle = "Gykoa Hub",
+	LoadingSubtitle = "by Gyko0",
+	ConfigurationSaving = {
+		Enabled = false,
+		FolderName = "Rayfield Interface Suite",
+		FileName = "Big Hub"
+	},
+	KeySystem = false, -- Set this to true to use our key system
+	KeySettings = {
+		Title = "Gykoa Hub",
+		Subtitle = "Key System",
+		Note = "Epic Gamer",
+		SaveKey = true,
+		Key = "ABCDEF"
+	}
+})
+local Tab = Window:CreateTab("Auto Farm", 4483362458)
+function loadSettings()
+    if readfile and isfile and isfile(filename) then
+        settings = HttpService:JSONDecode(readfile(filename))
+        return true
+    end
+    return false
+end
+function saveSettings()
+    if (writefile) then
+        json = HttpService:JSONEncode(settings)
+        writefile(filename, json)
+        return true
+    end
+    return false
+end
+loadSettings()
+function pretty_date(date)
+	local dateString = "{min}"
+	local result = string.gsub(dateString, "{(%w+)}", date)
+	return tonumber(result)
+end
+function teleport(gameid)
+	ts:Teleport(gameid, player)
+	task.wait(60)
+	ts:TeleportCancel()
+end
+Tab:CreateToggle({
+	Name = "Auto Raid",
+	CurrentValue = settings.autoraid,
+	Flag = "Toggle1",
+	Callback = function(Value)
+		settings.autoraid = Value
+		saveSettings()
+	end,
+})
+Tab:CreateToggle({
+	Name = "Auto Speed Raid",
+	CurrentValue = settings.autospeedraid,
+	Flag = "Toggle1",
+	Callback = function(Value)
+		settings.autospeedraid = Value
+		saveSettings()
+	end,
+})
+Tab:CreateToggle({
+	Name = "Auto Dimension",
+	CurrentValue = settings.autofarm,
+	Flag = "Toggle1",
+	Callback = function(Value)
+		settings.autofarm = Value
+		saveSettings()
+	end,
+})
+Tab:CreateToggle({
+	Name = "Auto Retry",
+	CurrentValue = settings.retry,
+	Flag = "Toggle1",
+	Callback = function(Value)
+		settings.retry = Value
+		saveSettings()
+	end,
+})
+local Char = player.Character or player.CharacterAdded:wait()
+if not game:IsLoaded() then
+	game.Loaded:Wait()
+end
+player.Idled:connect(function()
+VirtualUser:CaptureController()
+VirtualUser:ClickButton2(Vector2.new())
+end)
+if game.PlaceId == 7274690025 or game.PlaceId == 6938803436 or game.PlaceId == 7338881230 then
+	local characters = {""}
+	local gui = player.PlayerGui:WaitForChild("MainGui")
+	for _,v in pairs(player.PlayerGui.MainGui.CenterUIFrame.Inventory.Frame.CharacterInventoryFrame.CharacterInventoryScrollingFrame:GetChildren()) do
+		if v:FindFirstChild("CharacterClick") then
+			table.insert(characters,v.Name)
+		end
+	end
+	local Tabb = Window:CreateTab("Characters", 4483362458)
+	Tabb:CreateDropdown({
+		Name = "Main Character",
+		Options = characters,
+		CurrentOption = settings.Main,
+		Flag = "Dropdown1",
+		Callback = function(value)
+			settings.Main = value[1]
+			saveSettings()
+		end,
+	})
+	Tabb:CreateDropdown({
+		Name = "1st Assist",
+		Options = characters,
+		CurrentOption = settings.assist,
+		Flag = "Dropdown1",
+		Callback = function(value)
+			settings.assist = value[1]
+			saveSettings()
+		end,
+	})
+	Tabb:CreateDropdown({
+		Name = "2nd Assist",
+		Options = characters,
+		CurrentOption = settings.assistt,
+		Flag = "Dropdown1",
+		Callback = function(value)
+			settings.assistt = value[1]
+			saveSettings()
+		end,
+	})
+	if settings.Main ~= "" and game:GetService("ReplicatedStorage")[player.Name.."StatDisplay"]["CharacterName"].Value ~= settings.Main then
+		game:GetService("ReplicatedStorage").RemoteFunctions.MainRemoteFunction:InvokeServer("EquipCharacter",settings.Main)
+		task.wait(1)
+	end
+	if settings.assist ~= "" and RS[player.Name.."StatDisplay"]["AssistCharacterName1"].Value ~= settings.assist then
+		RS.RemoteFunctions.MainRemoteFunction:InvokeServer("EquipCharacterAssist",settings.assist,1)
+		task.wait(1)
+	end
+	if settings.assistt ~= "" and RS[player.Name.."StatDisplay"]["AssistCharacterName2"].Value ~= settings.assistt then
+		RS.RemoteFunctions.MainRemoteFunction:InvokeServer("EquipCharacterAssist",settings.assistt,2)
+		task.wait(1)
+	end
+end
+if game.PlaceId == 7274690025 or game.PlaceId == 6938803436 then
+	local dimensions = {}
+	local characters = {}
+	for _,v in pairs(player.PlayerGui.MainGui.CenterUIFrame.PlayFrame.Frame.PlayRoomFrame.MapSelectionScrollingFrame:GetChildren()) do
+		if v:FindFirstChild("Create") and v.Name ~= "MapSelectionTemplate" then
+			table.insert(dimensions,v.Name)
+		end
+	end
+	Tab:CreateToggle({
+		Name = "Use All Codes",
+		CurrentValue = false,
+		Flag = "Toggle1",
+		Callback = function(Value)
+			if Value then
+				for _,v in pairs(workspace.Leaderboards.MilestoneBoard.Center.Surface.ScrollingFrame:GetChildren()) do
+					if v:FindFirstChild("MilestoneCode") and v.MilestoneCode.Text ~= "LOCKED" then
+						RS.RemoteFunctions.MainRemoteFunction:InvokeServer("RedeemPromoCode",v.MilestoneCode.Text)
+					end
+				end
+			end
+		end,
+	})
+	Tab:CreateDropdown({
+		Name = "Dimensions",
+		Options = dimensions,
+		CurrentOption = settings.selecteddimension,
+		Flag = "Dropdown1",
+		Callback = function(value)
+			settings.selecteddimension = value[1]
+			saveSettings()
+		end,
+	})
+	Tab:CreateDropdown({
+		Name = "Difficulty",
+		Options = {"Easy","Hard","Nightmare"},
+		CurrentOption = settings.Difficulty,
+		Flag = "Dropdown1",
+		Callback = function(value)
+			settings.Difficulty = value[1]
+			saveSettings()
+		end,
+	})
+	Tab:CreateToggle({
+		Name = "Hardcore",
+		CurrentValue = settings.hardcore,
+		Flag = "Toggle1",
+		Callback = function(Value)
+			settings.hardcore = Value
+			saveSettings()
+		end,
+	})
+end
+if game.PlaceId == 7338881230 then
+	local raids = {}
+	for _,v in pairs(player.PlayerGui.MainGui.CenterUIFrame.PlayFrame.Frame.PlayRoomFrame.MapSelectionScrollingFrame:GetChildren()) do
+		if v:FindFirstChild("Create") and v.Name ~= "MapSelectionTemplate" then
+			table.insert(raids,v.Name)
+		end
+	end
+	Tab:CreateDropdown({
+		Name = "Raids",
+		Options = raids,
+		CurrentOption = settings.selectedraid,
+		Flag = "Dropdown1",
+		Callback = function(value)
+			settings.selectedraid = value[1]
+			saveSettings()
+		end,
+	})
+end
+Tab:CreateInput({
+   Name = "Input Discord WebHook",
+   PlaceholderText = "https://discord.com/api/webhooks",
+   RemoveTextAfterFocusLost = true,
+   Callback = function(Text)
+		settings.notification = Text
+		saveSettings()
+   end,
+})
+if (game.PlaceId == 7274690025 or game.PlaceId == 6938803436 or game.PlaceId == 7338881230 or game.PlaceId == 6990131029) then
+    while task.wait() and rebound do
+    	pcall(function()
+			local minute = pretty_date(os.date("*t", os.time()))
+			if settings.autoraid and settings.selectedraid ~= "" and (minute < 10) then
+				if game.PlaceId == 7274690025 or game.PlaceId == 6938803436 or game.PlaceId == 6990131029 then
+					teleport(7338881230)
+				elseif game.PlaceId == 7338881230 then
+					local args = {
+						[1] = "CreateRoom",
+						[2] = {
+							["Difficulty"] = "Easy", 
+							["FriendsOnly"] = true, 
+							["MapName"] = settings.selectedraid, 
+							["Hardcore"] = false
+						}
+					}
+					RS.RemoteFunctions.MainRemoteFunction:InvokeServer(unpack(args))
+					task.wait(5)
+					RS.RemoteFunctions.MainRemoteFunction:InvokeServer("TeleportPlayers")
+					task.wait(60)
+				end
+			elseif settings.autospeedraid and (os.time()-settings.lastraidtime) > 3660 then
+				if game.PlaceId == 6990131029 or game.PlaceId == 7338881230 then
+					teleport(7274690025)
+				elseif game.PlaceId == 7274690025 or game.PlaceId == 6938803436 then
+					local character
+					for _,v in pairs(game:GetService("Players").Jirenato.PlayerGui.MainGui.CenterUIFrame.SpeedRaidCharacterSelector.Shade.SpeedRaidCharacterInventoryScrollingFrame:GetChildren()) do
+						if v:FindFirstChild("CharacterImage") and v.CharacterImage.ImageTransparency == 0 and not character then
+							character = v.Name
+						end
+					end
+					RS.RemoteFunctions.MainRemoteFunction:InvokeServer("TeleportToShadowRaid",character)
+					task.wait(60)
+				end
+			elseif settings.autofarm then
+				if game.PlaceId == 6990131029 or game.PlaceId == 7338881230 then
+					teleport(7274690025)
+				elseif game.PlaceId == 7274690025 or game.PlaceId == 6938803436 then
+					local args = {
+						[1] = "CreateRoom",
+						[2] = {
+							["Difficulty"] = settings.Difficulty,
+							["FriendsOnly"] = true,
+							["MapName"] = settings.selecteddimension,
+							["Hardcore"] = settings.hardcore
+						}
+					}
+					RS.RemoteFunctions.MainRemoteFunction:InvokeServer(unpack(args))
+					task.wait(5)
+					RS.RemoteFunctions.MainRemoteFunction:InvokeServer("TeleportPlayers")
+					task.wait(60)
+				end
+			elseif (settings.autoraid and settings.selectedraid ~= "" and not (minute < 10)) or (settings.autospeedraid and not (os.time()-settings.lastraidtime) > 3660) then
+				if game.PlaceId == 7274690025 or game.PlaceId == 6938803436 or game.PlaceId == 7338881230 then
+					teleport(6990131029)
+				end
+			else
+				task.wait(60)
+			end
+		end)
+    end
+elseif not (game.PlaceId == 7274690025 or game.PlaceId == 6938803436 or game.PlaceId == 7338881230 or game.PlaceId == 6990131029) then
+	local unigui = player.PlayerGui:WaitForChild("UniversalGui")
+	local slotholder = unigui.UniversalCenterUIFrame.SlotsHolder
+	local headers = {
+		["content-type"] = "application/json"
+	}
+	local list = {}
+	local file = {}
+	local click = 0
+	local shadowraid
+	request = http_request or request or HttpPost or syn.request
+	function reward(v)
+		if list[v.Name] then
+			if v:FindFirstChild("LevelReq") and tonumber(v.LevelReq.Text) then
+				list[v.Name][2] = list[v.Name][2]+v.LevelReq.Text
+			else
+				list[v.Name][3] = list[v.Name][3]+1
+			end
+		elseif v:IsA("ImageLabel") then
+			if v:FindFirstChild("LevelReq") and v.LevelReq.Text ~= "" then
+				list[v.Name] = {
+					[1]=v.Name,
+					[2]=v.LevelReq.Text,
+					[3]=1
+				}
+			else
+				list[v.Name] = {
+					[1]=v.Name,
+					[3]=1
+				}
+			end
+		end
+	end
+	function result()
+		if tonumber(string.split(player.PlayerGui.UniversalGui.UniversalCenterUIFrame.ResultUI.TeleportingTimeText.Text,"Teleporting in ")[2]) <= 5 then
+			return true
+		elseif tonumber(string.split(player.PlayerGui.UniversalGui.UniversalCenterUIFrame.RaidResultUI.Frame.RaidTeleportingTimeText.Text,"Teleporting in ")[2]) <= 5 then
+			return true
+		end
+		return false
+	end
+	function checkplayers()
+		for _,v in pairs(players:GetPlayers()) do
+			if v.Name ~= player.Name then
+				return true
+			end
+		end
+		return false
+	end
+	function FoundTarget()
+		local Target = {}
+		local HRP = game.Players.LocalPlayer.Character.HumanoidRootPart
+		for _,v in pairs(workspace.Folders.Monsters:GetChildren()) do
+			if v:FindFirstChild("EnemyHealthBarGui") then
+				table.insert(Target,{v,(HRP.Position-v.HumanoidRootPart.Position).magnitude})
+			end
+		end
+		table.sort(Target,
+			function(a,b)
+			return a[2]<b[2]
+		end)
+		return Target[1][1]
+	end
+	function tweening(cframe)
+		if (players.LocalPlayer.Character.HumanoidRootPart.Position-cframe.p).Magnitude > 1 then
+			tweenService, tweenInfo = game:GetService("TweenService"), TweenInfo.new(((players.LocalPlayer.Character.HumanoidRootPart.Position - cframe.Position).magnitude/100), Enum.EasingStyle.Linear)
+			tween = tweenService:Create(players.LocalPlayer.Character.HumanoidRootPart, tweenInfo, {CFrame = cframe})
+			tween:Play()
+			tween.Completed:Wait()
+			task.wait()
+		end
+	end
+	function animating()
+		for _,v in pairs(player.Character.Humanoid.Animator:GetPlayingAnimationTracks()) do
+			if v.Name == "Animation" then
+				return true
+			end
+		end
+		return false
+	end
+	coroutine.wrap(function()
+		local part = Instance.new("Part")
+		local min, max, final = ("a"):byte(), ("z"):byte(), ""
+		for i = 1, 10 do
+			final ..= string.char(math.random(min, max))
+		end
+		part.Name = final
+		part.Size = Vector3.new(3, 0.2, 3)
+		part.Transparency = 1
+		part.Parent = game.Workspace
+		while task.wait() and not missionended do
+			pcall(function()
+				if settings.autoraid or settings.autofarm or settings.autospeedraid then
+					for _,v in pairs(player.Character:GetChildren()) do
+						if v.className == "Part" then
+							v.CanCollide = false
+						end
+					end
+					part.CanCollide = true
+					part.CFrame = player.Character.HumanoidRootPart.CFrame + Vector3.new(0,-3.1,0)
+				end
+			end)
+		end
+		part:Destroy()
+	end)()
+	coroutine.wrap(function()
+		while task.wait() and not missionended do
+			click = click+1
+		end
+	end)()
+	coroutine.wrap(function()
+		while task.wait() and not missionended do
+			pcall(function()
+				local success,v = pcall(FoundTarget)
+				local x = tick()
+				if success and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 and (player.Character.HumanoidRootPart.Position-v.HumanoidRootPart.Position).Magnitude < 50 then
+					if not animating() then
+						local args = {
+							[1] = "UseSkill",
+							[2] = {
+								["hrpCFrame"] = CFrame.new(player.Character.HumanoidRootPart.Position,v.HumanoidRootPart.Position)
+							}
+						}
+						if slotholder["Skill5"].Visible and not tonumber(slotholder["Skill5"].SkillName.Text) then
+							args[3] = 5
+							RS.RemoteEvents.MainRemoteEvent:FireServer(unpack(args))
+							repeat task.wait() until animating() or (tick()-x) > 1
+						elseif not tonumber(slotholder["Skill1"].SkillName.Text) then
+							args[3] = 1
+							RS.RemoteEvents.MainRemoteEvent:FireServer(unpack(args))
+							repeat task.wait() until animating() or (tick()-x) > 1
+						elseif not tonumber(slotholder["Skill2"].SkillName.Text) then
+							args[3] = 2
+							RS.RemoteEvents.MainRemoteEvent:FireServer(unpack(args))
+							repeat task.wait() until animating() or (tick()-x) > 1
+						elseif not tonumber(slotholder["Skill3"].SkillName.Text) then
+							args[3] = 3
+							RS.RemoteEvents.MainRemoteEvent:FireServer(unpack(args))
+							repeat task.wait() until animating() or (tick()-x) > 1
+						elseif not tonumber(slotholder["Skill4"].SkillName.Text) then
+							args[3] = 4
+							RS.RemoteEvents.MainRemoteEvent:FireServer(unpack(args))
+							repeat task.wait() until animating() or (tick()-x) > 1
+						elseif click > 15 then
+							RS.RemoteEvents.MainRemoteEvent:FireServer("UseSkill",{["hrpCFrame"] = CFrame.new(player.Character.HumanoidRootPart.Position,Vector3.new(v.HumanoidRootPart.Position.X,player.Character.HumanoidRootPart.Position.Y,v.HumanoidRootPart.Position.Z)),["attackNumber"] = 4},"BasicAttack")
+							click = 0
+						end
+					end
+					if slotholder["SkillAssist1"].SkillName.Text ~= "None" and slotholder["SkillAssist1"].Image ~= "rbxassetid://6797200424" then
+						RS.RemoteEvents.MainRemoteEvent:FireServer("UseAssistSkill",{["hrpCFrame"] = CFrame.new(player.Character.HumanoidRootPart.Position,v.HumanoidRootPart.Position)},1)
+						repeat task.wait() until slotholder["SkillAssist1"].Image == "rbxassetid://6797200424" or (tick()-x) > 5
+					end
+					if slotholder["SkillAssist2"].SkillName.Text ~= "None" and slotholder["SkillAssist2"].Image ~= "rbxassetid://6797200424" then
+						RS.RemoteEvents.MainRemoteEvent:FireServer("UseAssistSkill",{["hrpCFrame"] = CFrame.new(player.Character.HumanoidRootPart.Position,v.HumanoidRootPart.Position)},2)
+						repeat task.wait() until slotholder["SkillAssist1"].Image == "rbxassetid://6797200424" or (tick()-x) > 5
+					end
+				end
+			end)
+		end
+	end)()
+	while task.wait() and not missionended do
+		pcall(function()
+			local success,v = pcall(FoundTarget)
+			if success and (settings.autoraid or settings.autofarm or settings.autospeedraid) then
+				tweening(v.HumanoidRootPart.CFrame + (v.HumanoidRootPart.CFrame.lookVector*(-2)))
+			end
+			if workspace.GameMap:FindFirstChild(settings.selectedraid) and player.Character and player.Character.Humanoid.Health ~= 0 and RS[player.Name.."StatDisplay"].BattleCharacterName.Value ~= RS[player.Name.."StatDisplay"].CharacterName.Value then
+				player.Character.Humanoid.Health = 0
+				task.wait(1)
+			end
+			if result() or checkplayers() then missionended = true end
+			if not shadowraid and success and string.split(v.Name,"Shadow")[1] == "" then shadowraid = true end
+		end)
+	end
+	if shadowraid then
+		settings.lastraidtime = os.time()
+		saveSettings()
+	elseif settings.autospeedraid and (os.time()-settings.lastraidtime) > 3660 then
+	elseif settings.autoraid and (tonumber(pretty_date(os.date("*t", os.time()))) < 10) then
+	elseif settings.retry then
+		RS.RemoteEvents.MainRemoteEvent:FireServer("RetryDungeon")
+	end
+	if settings.notification ~= "" then
+		for _,v in pairs(player.PlayerGui.UniversalGui.UniversalCenterUIFrame.ResultUI.RewardFrame.RewardGridFrame:GetChildren()) do
+			reward(v)
+		end
+		for _,shadow in pairs(player.PlayerGui.UniversalGui.UniversalCenterUIFrame.RaidResultUI.Frame:GetChildren()) do
+			if shadow:FindFirstChild("RaidRewardGridFrame") then
+				for _,v in pairs(shadow.RaidRewardGridFrame:GetChildren()) do
+					reward(v)
+				end
+			end
+		end
+		for i,v in pairs(list) do
+			if v[2] and v[3] > 1 then
+				table.insert(file,{["name"] = v[3].."x "..v[1], ["value"] = v[2], ["inline"] = false})
+			elseif v[2] then
+				table.insert(file,{["name"] = v[1], ["value"] = v[2], ["inline"] = false})
+			elseif not v[2] then
+				table.insert(file,{["name"] = v[1], ["value"] = "Character or Accessory", ["inline"] = false})
+			end
+		end
+		local data = {
+			["embeds"] = {
+				{
+					["title"] = "Rewards",
+					["fields"] = file,
+					["type"] = "rich",
+					["color"] = tonumber(0x7269da),
+				}
+			}
+		}
+		local newdata = game:GetService("HttpService"):JSONEncode(data)
+		local abcdef = {Url = settings.notification, Body = newdata, Method = "POST", Headers = headers}
+		request(abcdef)
+	end
+end
