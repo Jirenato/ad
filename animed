@@ -267,7 +267,7 @@ Tab:CreateInput({
 if (game.PlaceId == 7274690025 or game.PlaceId == 6938803436 or game.PlaceId == 7338881230 or game.PlaceId == 6990131029) then
     while task.wait() and rebound do
     	pcall(function()
-			local minute = pretty_date(os.date("*t", os.time()))
+			local minute = pretty_date(os.date("*t", os.time())) - 600
 			if settings.autoraid and settings.selectedraid ~= "" and (minute < 10) then
 				if game.PlaceId == 7274690025 or game.PlaceId == 6938803436 or game.PlaceId == 6990131029 then
 					teleport(7338881230)
