@@ -41,6 +41,7 @@ selectedraid = "",
 selecteddimension = "",
 Difficulty = "Easy",
 hardcore = false,
+safe = false,
 lastraidtime = 1,
 notification = "https://discord.com/api/webhooks/932738608484479037/EtbJCsBvZPGFibQPAkCkNIZw7rB6fZZXOWDaBFccmk--8EJT5_uQjBYdKGIcLQADtHzB"
 }
@@ -122,6 +123,15 @@ Tab:CreateToggle({
 	Flag = "Toggle1",
 	Callback = function(Value)
 		settings.retry = Value
+		saveSettings()
+	end,
+})
+Tab:CreateToggle({
+	Name = "Safe",
+	CurrentValue = settings.safe,
+	Flag = "Toggle1",
+	Callback = function(Value)
+		settings.safe = Value
 		saveSettings()
 	end,
 })
@@ -368,9 +378,11 @@ elseif not (game.PlaceId == 7274690025 or game.PlaceId == 6938803436 or game.Pla
 		return false
 	end
 	function checkplayers()
-		for _,v in pairs(players:GetPlayers()) do
-			if v.Name ~= player.Name then
-				return true
+		if settings.safe then
+			for _,v in pairs(players:GetPlayers()) do
+				if v.Name ~= player.Name then
+					return true
+				end
 			end
 		end
 		return false
