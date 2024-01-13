@@ -494,11 +494,11 @@ elseif not (game.PlaceId == 7274690025 or game.PlaceId == 6938803436 or game.Pla
 						RS.RemoteEvents.MainRemoteEvent:FireServer("UseAssistSkill",{["hrpCFrame"] = CFrame.new(player.Character.HumanoidRootPart.Position,v.HumanoidRootPart.Position)},2)
 						repeat task.wait() until slotholder["SkillAssist1"].Image == "rbxassetid://6797200424" or (tick()-x) > 5
 					end
-					if slotholder["SkillFruit1"].Visible and not tonumber(slotholder["SkillFruit1"].SkillName.Text) then
+					if slotholder["SkillFruit1"].Visible and slotholder["SkillFruit1"].Image ~= "rbxassetid://6797200424" then
 						RS.RemoteEvents.MainRemoteEvent:FireServer("UseFruitSkill",{["hrpCFrame"] = CFrame.new(player.Character.HumanoidRootPart.Position,v.HumanoidRootPart.Position)},1)
 						repeat task.wait() until slotholder["SkillFruit1"].Image == "rbxassetid://6797200424" or (tick()-x) > 5
 					end
-					if slotholder["SkillFruit2"].Visible and not tonumber(slotholder["SkillFruit2"].SkillName.Text) then
+					if slotholder["SkillFruit2"].Visible and slotholder["SkillFruit2"].Image ~= "rbxassetid://6797200424" then
 						RS.RemoteEvents.MainRemoteEvent:FireServer("UseFruitSkill",{["hrpCFrame"] = CFrame.new(player.Character.HumanoidRootPart.Position,v.HumanoidRootPart.Position)},2)
 						repeat task.wait() until slotholder["SkillFruit2"].Image == "rbxassetid://6797200424" or (tick()-x) > 5
 					end
